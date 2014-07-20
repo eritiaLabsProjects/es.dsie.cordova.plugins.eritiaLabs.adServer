@@ -44,8 +44,8 @@
         </config-file>
 
         <source-file src="src/android/es.dsie.cordova.plugins.eritialabs.adserver/AdServerPlugin.java" target-dir="src/es/dsie/cordova/plugins/eritialabs/adserver"/>
-        
-      
+
+
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.INTERNET" />
             <uses-permission android:name=" android.permission.ACCESS_NETWORK_STATE" />
@@ -53,27 +53,27 @@
             <uses-permission android:name=" android.permission.ACCESS_WIFI_STATE" />
             <uses-permission android:name=" android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file>
-        
+
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
 
         </config-file>
 
     </platform>
 
-    <!-- ios 
+    <!-- ios
     <platform name="ios">
         <feature name="AdController">
             <param name="ios-package" value="LBPhonegapPlugin" />
             <param name="onload" value="true" />
         </feature>
-      
+
       <header-file src="src/ios/LBHeaders/JSONKit.h" />
       <header-file src="src/ios/LBHeaders/LeadboltOverlay.h" />
       <source-file src="src/ios/LBHeaders/JSONKit.m" compiler-flags="-fno-objc-arc" />
-      
+
       <header-file src="src/ios/LBPhonegapPlugin.h" />
       <source-file src="src/ios/libLBPhonegapPlugin.a" framework="true" />
       <source-file src="src/ios/libLeadboltOverlay.a" framework="true" />
     </platform>-->
-    
+
 </plugin>
