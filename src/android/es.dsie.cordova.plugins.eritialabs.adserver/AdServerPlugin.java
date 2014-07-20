@@ -1,23 +1,21 @@
-package es.dsie.cordova.plugins.openx;
+package es.dsie.cordova.plugins.eritialabs.adserver;
 
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.LinearLayoutSoftKeyboardDetect;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.openx.ad.mobile.sdk.interfaces.AdEventsListener;
-import com.openx.errors.AdError;
-import com.openx.model.MRAIDAction;
-import com.openx.view.AdBanner;
-import com.openx.view.AdInterstitial;
+import es.dsie.cordova.plugins.eritialabs.adserver.view.BannerView;
 
 import android.util.Log;
+import android.view.ViewGroup.LayoutParams;
+import android.webkit.WebView;
+import android.widget.LinearLayout;
 
 
-public class OpenXPlugin extends CordovaPlugin {
+public class AdServerPlugin extends CordovaPlugin {
 	private static final String LOGTAG = "OpenXPlugin";
 	
     private static final String ACTION_INIT = "init";
@@ -28,8 +26,7 @@ public class OpenXPlugin extends CordovaPlugin {
     private static final int DEFAULT_AD_CHANGE_INTERVAL = 60000;
     
     private static final String JSON_KEY_DOMAIN = "domain";
-    private static final String JSON_KEY_PORTRAIT_ID = "portraitId";
-    private static final String JSON_KEY_LANDSCAPE_ID = "landscapeId";
+    private static final String JSON_KEY_ZONE_ID = "zoneId";
     private static final String JSON_KEY_CHANGE_INTERVAL = "changeInterval";
     
     private String poolId = "";
@@ -59,8 +56,7 @@ public class OpenXPlugin extends CordovaPlugin {
     }
 
     private String bannerDomain = "";
-    private String bannerPortraitId = "";
-    private String bannerLandscapeId = "";
+    private String bannerZoneId = "";
     private int    bannerAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
     
     private void executeShowBanner(JSONArray inputs, CallbackContext callbackContext) {
@@ -68,8 +64,7 @@ public class OpenXPlugin extends CordovaPlugin {
         try {
         	JSONObject data = inputs.getJSONObject(0);
         	this.bannerDomain = data.getString(JSON_KEY_DOMAIN);
-        	this.bannerPortraitId = data.getString(JSON_KEY_PORTRAIT_ID);
-        	this.bannerLandscapeId = data.getString(JSON_KEY_LANDSCAPE_ID);
+        	this.bannerZoneId = data.getString(JSON_KEY_ZONE_ID);
         	this.bannerAdChangeInterval = data.getInt(JSON_KEY_CHANGE_INTERVAL);
         	
     		// Create the AdView on the UI thread.
@@ -80,9 +75,8 @@ public class OpenXPlugin extends CordovaPlugin {
     				Log.w(LOGTAG, String.valueOf(webView));
     					
     				LinearLayoutSoftKeyboardDetect parentView = (LinearLayoutSoftKeyboardDetect) webView.getParent();
-    				AdBanner banner =  new  AdBanner(webView.getContext(), bannerDomain, bannerPortraitId, bannerLandscapeId);
-    				banner.setAdChangeInterval(bannerAdChangeInterval);
-					parentView.addView(banner);
+    				WebView banner = new BannerView(webView.getContext()).loadAd(bannerDomain,bannerZoneId,bannerAdChangeInterval);
+					parentView.addView(banner,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 50));
     			}
     		};
     		this.cordova.getActivity().runOnUiThread(runnable);
@@ -93,16 +87,14 @@ public class OpenXPlugin extends CordovaPlugin {
     }
     
     private String interstitialDomain = "";
-    private String interstitialPortraitId = "";
-    private String interstitialLandscapeId = "";
+    private String interstitialZoneId = "";
 
     
     private void executeShowInterstitial(JSONArray inputs, CallbackContext callbackContext) {
         try {
         	JSONObject data = inputs.getJSONObject(0);
         	this.interstitialDomain = data.getString(JSON_KEY_DOMAIN);
-        	this.interstitialPortraitId = data.getString(JSON_KEY_PORTRAIT_ID);
-        	this.interstitialLandscapeId = data.getString(JSON_KEY_LANDSCAPE_ID);
+        	this.interstitialZoneId = data.getString(JSON_KEY_ZONE_ID);
 
         	// Create the AdView on the UI thread.
     		Log.w(LOGTAG, "createInterstitialView");
@@ -110,46 +102,6 @@ public class OpenXPlugin extends CordovaPlugin {
     			public void run() {
     				Log.w(LOGTAG, "ShowInterstitial:" + poolId);
     				Log.w(LOGTAG, String.valueOf(webView));
-    					
-    				final AdInterstitial adInterstitial = new AdInterstitial(webView.getContext(), interstitialDomain, interstitialPortraitId, interstitialLandscapeId);
-    				adInterstitial.setAdEventsListener(new AdEventsListener() {
-    				 @Override
-    				  public void onAdFailedToLoad(AdError e) {
-    					 Log.w(LOGTAG, "onAdFailedToLoad");
-    				  }
-    				 
-    				  @Override
-    				  public void onAdDidLoad() {
-    					  Log.w(LOGTAG, "onAdDidLoad");
-    					  adInterstitial.show();
-    				  }
-    				 
-    				  @Override
-    				  public void onActionWillBegin(MRAIDAction action) {
-    					  Log.w(LOGTAG, "onActionWillBegin");
-    				  }
-    				 
-    				  @Override
-    				  public void onActionDidFinish(MRAIDAction action) {
-    					  Log.w(LOGTAG, "onActionDidFinish");
-    				  }
-    				 
-    				 @Override
-    				   public void onActionDenied() {
-    					 Log.w(LOGTAG, "onActionDenied"); 
-    				   }
-
-    				  @Override
-    				  public void onActionDidBegin(MRAIDAction action) {
-    					  Log.w(LOGTAG, "onActionDidBegin");
-    				  }
-    				 
-    				  @Override
-    				  public void onAdClose() {
-    					  Log.w(LOGTAG, "onAdClose");
-    				  }
-    				 });
-    				adInterstitial.startLoading();
     			}
     		};
     		this.cordova.getActivity().runOnUiThread(runnable);

@@ -1,19 +1,19 @@
-var OpenX = {};
+var AdServer = {};
 
-OpenX.init= function(params,successCallback, errorCallback) {
-    cordova.exec(successCallback, errorCallback, "OpenXPlugin", "init", [params]);
+AdServer.init= function(params,successCallback, errorCallback) {
+    cordova.exec(successCallback, errorCallback, "AdServerPlugin", "init", [params]);
   };
 
-OpenX.showInterstitial = function(params,successCallback, errorCallback) {
-		cordova.exec(successCallback, errorCallback, "OpenXPlugin", "showInterstitial", [params]);
+AdServer.showInterstitial = function(params,successCallback, errorCallback) {
+		cordova.exec(successCallback, errorCallback, "AdServerPlugin", "showInterstitial", [params]);
 	};
 
-OpenX.showBanner = function(params,successCallback, errorCallback) {
-		cordova.exec(successCallback, errorCallback, "OpenXPlugin", "showBanner", [params]);
+AdServer.showBanner = function(params,successCallback, errorCallback) {
+		cordova.exec(successCallback, errorCallback, "AdServerPlugin", "showBanner", [params]);
 	};
 
-OpenX.hideBanner = function(params,successCallback, errorCallback) {
-		cordova.exec(successCallback, errorCallback, "OpenXPlugin", "hideBanner", [params]);
+AdServer.hideBanner = function(params,successCallback, errorCallback) {
+		cordova.exec(successCallback, errorCallback, "AdServerPlugin", "hideBanner", [params]);
 	};
 
-module.exports = OpenX;
+module.exports = AdServer;

@@ -44,14 +44,15 @@
         </config-file>
 
         <source-file src="src/android/es.dsie.cordova.plugins.eritialabs.adserver/AdServerPlugin.java" target-dir="src/es/dsie/cordova/plugins/eritialabs/adserver"/>
+        <source-file src="src/android/es.dsie.cordova.plugins.eritialabs.adserver/view/BannerView.java" target-dir="src/es/dsie/cordova/plugins/eritialabs/adserver/view"/>
 
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.INTERNET" />
-            <uses-permission android:name=" android.permission.ACCESS_NETWORK_STATE" />
-            <uses-permission android:name=" android.permission.ACCESS_FINE_LOCATION" />
-            <uses-permission android:name=" android.permission.ACCESS_WIFI_STATE" />
-            <uses-permission android:name=" android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
