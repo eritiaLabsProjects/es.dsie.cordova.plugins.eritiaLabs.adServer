@@ -55,18 +55,20 @@ public class InterstitialView extends WebView {
 		
 		Log.i(LOGTAG, "BannerView.loadAd.URL:" + url);
 		
-		this.loadUrl(url);
-		
+		String script = "javascript:document.write(\"<scr\" + \"ipt type='text/javascript' src='" + url + "'></scr\" + \"ipt>\"); ";
+		Log.i(LOGTAG, "BannerView.loadAd.script :" + script);
+		this.loadUrl(script);
 		
 		this.addJavascriptInterface(this, "iview");
-		this.loadUrl(
-			"javascript:function(e) { " +  
-			"	console.log(e.data); " + 
-			"	if(window.parent != window) { " +
-			"		window.parent.postMessage(e.data,window.location.origin); " +
-			"	} " +
-			"}"
-		);
+		
+		script = "javascript:window.addEventListener('message',function(e) { " +  
+				"	console.log(e.data); " + 
+				"	if(window.parent != window) { " +
+				"		window.parent.postMessage(e.data,window.location.origin); " +
+				"	} " +
+				"});";
+		Log.i(LOGTAG, "BannerView.loadAd.script :" + script);
+		this.loadUrl(script);
 		
 		return this;
 	}

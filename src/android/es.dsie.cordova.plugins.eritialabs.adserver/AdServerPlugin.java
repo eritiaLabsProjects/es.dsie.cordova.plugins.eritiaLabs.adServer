@@ -171,16 +171,18 @@ public class AdServerPlugin extends CordovaPlugin {
     					public boolean onKeyDown(int keyCode, KeyEvent event) {
     						Log.i(LOGTAG,"IntersticialView.onKeyDown.keyCode=" + keyCode);
     						Log.i(LOGTAG,"IntersticialView.onKeyDown.event.getKeyCode=" + event.getKeyCode());
+    						Log.i(LOGTAG,"IntersticialView.onKeyDown.KeyEvent.KEYCODE_BACK=" + KeyEvent.KEYCODE_BACK);
     						if(event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
     							executeHideInterstitial();
-    							return false;
-    						} else {
     							return true;
+    						} else {
+    							return false;
     						}
     					};
     				};
     				webViewInterstitial = webViewInterstitial.loadAd(interstitialSource,interstitialDomain,interstitialZoneId,interstitialAdChangeInterval);
 					parentView.addView(webViewInterstitial,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
+					webViewInterstitial.focusSearch(1);
     			}
     		};
     		this.cordova.getActivity().runOnUiThread(runnable);
