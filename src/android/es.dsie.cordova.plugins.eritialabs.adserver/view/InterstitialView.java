@@ -11,7 +11,21 @@ import android.webkit.WebView;
 public class InterstitialView extends WebView {
 	private static final String LOGTAG = "AdServerPlugin";
 	
-	private final String _TPL_URL = "%s/www/delivery/al.php?refresh=%d&zoneid=%s&source=%s&target=%s&cb=%d&ct0=%s&adstext=Ads&closebutton=special&layerstyle=simple&align=center&valign=middle&padding=10&buttonsize=14&deferclose=5";
+	private final String _TPL_URL = "%s/www/delivery/al.php?refresh=%d" +
+									"&zoneid=%s" + 
+									"&source=%s" + 
+									"&target=%s" + 
+									"&cb=%d" + 
+									"&ct0=%s" + 
+									"&adstext=Ads" + 
+									"&closebutton=special" + 
+									"&layerstyle=simple" + 
+									"&align=center" + 
+									"&valign=middle" + 
+									"&padding=10" + 
+									"&buttonsize=14" + 
+									"&deferclose=5" +
+									"&noborder=t";
 	
 	/*
 	 * ox_u += "zoneid=" + (QueryString.zoneid?QueryString.zoneid:"6");

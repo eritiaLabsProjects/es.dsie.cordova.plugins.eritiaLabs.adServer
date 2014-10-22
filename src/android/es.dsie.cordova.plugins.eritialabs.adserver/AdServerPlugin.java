@@ -168,7 +168,7 @@ public class AdServerPlugin extends CordovaPlugin {
     				LinearLayoutSoftKeyboardDetect parentView = (LinearLayoutSoftKeyboardDetect) webView.getParent();
     				webViewInterstitial= new InterstitialView(webView.getContext()) {
     					@Override
-    					public boolean onKeyDown(int keyCode, KeyEvent event) {
+    					public boolean onKeyUp(int keyCode, KeyEvent event) {
     						Log.i(LOGTAG,"IntersticialView.onKeyDown.keyCode=" + keyCode);
     						Log.i(LOGTAG,"IntersticialView.onKeyDown.event.getKeyCode=" + event.getKeyCode());
     						Log.i(LOGTAG,"IntersticialView.onKeyDown.KeyEvent.KEYCODE_BACK=" + KeyEvent.KEYCODE_BACK);
@@ -186,7 +186,8 @@ public class AdServerPlugin extends CordovaPlugin {
     				};
     				webViewInterstitial = webViewInterstitial.loadAd(interstitialSource,interstitialDomain,interstitialZoneId,interstitialAdChangeInterval);
 					parentView.addView(webViewInterstitial,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
-					webViewInterstitial.focusSearch(1);
+					webViewInterstitial.requestFocus();
+					
     			}
     		};
     		this.cordova.getActivity().runOnUiThread(runnable);
@@ -218,6 +219,11 @@ public class AdServerPlugin extends CordovaPlugin {
 			}
 		};
 		this.cordova.getActivity().runOnUiThread(runnable);
+    }
+    
+    private boolean executeIsInterstitialVisible(JSONArray inputs, CallbackContext callbackContext) {
+    	boolean result = (webViewInterstitial != null) && (webViewInterstitial.isShown() || webViewInterstitial.getVisibility() != View.VISIBLE);
+    	return result;
     }
 
 
