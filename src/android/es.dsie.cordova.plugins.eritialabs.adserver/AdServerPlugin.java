@@ -179,6 +179,10 @@ public class AdServerPlugin extends CordovaPlugin {
     							return false;
     						}
     					};
+    					@Override
+    					public void doClose() {
+    						executeHideInterstitial();
+    					}
     				};
     				webViewInterstitial = webViewInterstitial.loadAd(interstitialSource,interstitialDomain,interstitialZoneId,interstitialAdChangeInterval);
 					parentView.addView(webViewInterstitial,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
