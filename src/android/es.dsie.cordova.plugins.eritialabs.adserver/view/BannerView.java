@@ -10,15 +10,15 @@ public class BannerView extends WebView {
 	private final String _TPL_URL = "http://%s/www/delivery/afr.php?refresh=%d&zoneid=%s&source=%s&target=$s&cb=%d&ct0=%s";
 	private final String _RETURN_URL = "INSERT_ENCODED_CLICKURL_HERE";
 	private final String _SOURCE = "BacoApp";
-	private final String _TARGET = "_blank";
+	private final String _TARGET = "_system";
 
 	public BannerView(Context context) {
 		super(context);
 	}
 	
-	public WebView loadAd(String domain,String zoneId,int changeInterval) {
+	public WebView loadAd(String source, String domain,String zoneId,int changeInterval) {
 		Random rand = new Random();
-		String url = String.format(_TPL_URL,domain,changeInterval,zoneId,_SOURCE,_TARGET,rand.nextInt(),_RETURN_URL);
+		String url = String.format(_TPL_URL,domain,changeInterval,zoneId,source,_TARGET,rand.nextInt(),_RETURN_URL);
 		this.loadUrl(url);
 		
 		return this;

@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 
 
 public class AdServerPlugin extends CordovaPlugin {
-	private static final String LOGTAG = "OpenXPlugin";
+	private static final String LOGTAG = "AdServerPlugin";
 	
     private static final String ACTION_INIT = "init";
     private static final String ACTION_SHOW_BANNER = "showBanner";
@@ -24,10 +24,13 @@ public class AdServerPlugin extends CordovaPlugin {
     private static final String ACTION_HIDE_BANNER = "hideBanner";
     
     private static final int DEFAULT_AD_CHANGE_INTERVAL = 60000;
+    private static final int DEFAULT_AD_HEIGHT = 60;
     
     private static final String JSON_KEY_DOMAIN = "domain";
     private static final String JSON_KEY_ZONE_ID = "zoneId";
     private static final String JSON_KEY_CHANGE_INTERVAL = "changeInterval";
+    private static final String JSON_KEY_SOURCE = "source";
+    private static final String JSON_KEY_HEIGHT = "height";
     
     private String poolId = "";
 
@@ -47,6 +50,7 @@ public class AdServerPlugin extends CordovaPlugin {
             return true;
         } else if (ACTION_HIDE_BANNER.equals(action)) {
             //executeKillAd(callbackContext);
+            executeHideBanner();
             return true;
         } else {
             Log.d(LOGTAG, String.format("Invalid action passed: %s", action));
@@ -55,17 +59,23 @@ public class AdServerPlugin extends CordovaPlugin {
         return false;
     }
 
+    private String bannerSource = "";
     private String bannerDomain = "";
     private String bannerZoneId = "";
     private int    bannerAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
+    private int    bannerHeight = DEFAULT_AD_HEIGHT;
+
+    private WebView webViewBanner = null;
     
     private void executeShowBanner(JSONArray inputs, CallbackContext callbackContext) {
         
         try {
         	JSONObject data = inputs.getJSONObject(0);
+            this.bannerSource = data.getString(JSON_KEY_SOURCE);
         	this.bannerDomain = data.getString(JSON_KEY_DOMAIN);
         	this.bannerZoneId = data.getString(JSON_KEY_ZONE_ID);
-        	this.bannerAdChangeInterval = data.getInt(JSON_KEY_CHANGE_INTERVAL);
+            this.bannerAdChangeInterval = data.getInt(JSON_KEY_CHANGE_INTERVAL);
+        	this.bannerHeight = data.getInt(JSON_KEY_HEIGHT);
         	
     		// Create the AdView on the UI thread.
     		Log.w(LOGTAG, "createBannerView");
@@ -75,14 +85,20 @@ public class AdServerPlugin extends CordovaPlugin {
     				Log.w(LOGTAG, String.valueOf(webView));
     					
     				LinearLayoutSoftKeyboardDetect parentView = (LinearLayoutSoftKeyboardDetect) webView.getParent();
-    				WebView banner = new BannerView(webView.getContext()).loadAd(bannerDomain,bannerZoneId,bannerAdChangeInterval);
-					parentView.addView(banner,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 50));
+    				webViewBanner = new BannerView(webView.getContext()).loadAd(bannerSource,bannerDomain,bannerZoneId,bannerAdChangeInterval);
+					parentView.addView(webViewBanner,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, bannerHeight));
     			}
     		};
     		this.cordova.getActivity().runOnUiThread(runnable);
         } catch (JSONException exception) {
             Log.w(LOGTAG,String.format("Got JSON Exception: %s",exception.getMessage()));
             callbackContext.error(exception.getMessage());
+        }
+    }
+
+    private void executeHideBanner() {
+        if(webViewBanner != null) {
+            Log.v(LOGTAG,"Se ocultaría el Banner.");
         }
     }
     
