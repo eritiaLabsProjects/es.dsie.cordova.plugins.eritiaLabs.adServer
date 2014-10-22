@@ -3,23 +3,28 @@ package es.dsie.cordova.plugins.eritialabs.adserver;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.LinearLayoutSoftKeyboardDetect;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import es.dsie.cordova.plugins.eritialabs.adserver.view.BannerView;
 
+import android.transition.Visibility;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 
 
 public class AdServerPlugin extends CordovaPlugin {
-	private static final String LOGTAG = "AdServerPlugin";
-	
+    private static final String LOGTAG = "AdServerPlugin";
+    
     private static final String ACTION_INIT = "init";
     private static final String ACTION_SHOW_BANNER = "showBanner";
+    private static final String ACTION_IS_BANNER_VISIBLE = "isBannerVisible";
     private static final String ACTION_SHOW_INTERSTITIAL = "showInterstitial";
     private static final String ACTION_HIDE_BANNER = "hideBanner";
     
@@ -44,8 +49,12 @@ public class AdServerPlugin extends CordovaPlugin {
             //executeCreateInterstitialView(inputs, callbackContext);
             executeShowBanner(inputs,callbackContext);
             return true;
-        } else if (ACTION_SHOW_INTERSTITIAL.equals(action)) {
-        	executeShowInterstitial(inputs, callbackContext);
+        } else if (ACTION_IS_BANNER_VISIBLE.equals(action)) {
+            //executeCreateInterstitialView(inputs, callbackContext);
+            return executeIsBannerVisible(inputs,callbackContext);
+        }
+        else if (ACTION_SHOW_INTERSTITIAL.equals(action)) {
+            executeShowInterstitial(inputs, callbackContext);
             //executeRequestAd(inputs, callbackContext);
             return true;
         } else if (ACTION_HIDE_BANNER.equals(action)) {
@@ -70,26 +79,26 @@ public class AdServerPlugin extends CordovaPlugin {
     private void executeShowBanner(JSONArray inputs, CallbackContext callbackContext) {
         
         try {
-        	JSONObject data = inputs.getJSONObject(0);
+            JSONObject data = inputs.getJSONObject(0);
             this.bannerSource = data.getString(JSON_KEY_SOURCE);
-        	this.bannerDomain = data.getString(JSON_KEY_DOMAIN);
-        	this.bannerZoneId = data.getString(JSON_KEY_ZONE_ID);
+            this.bannerDomain = data.getString(JSON_KEY_DOMAIN);
+            this.bannerZoneId = data.getString(JSON_KEY_ZONE_ID);
             this.bannerAdChangeInterval = data.getInt(JSON_KEY_CHANGE_INTERVAL);
-        	this.bannerHeight = data.getInt(JSON_KEY_HEIGHT);
-        	
-    		// Create the AdView on the UI thread.
-    		Log.w(LOGTAG, "createBannerView");
-    		Runnable runnable = new Runnable() {
-    			public void run() {
-    				Log.w(LOGTAG, "ShowBanner:" + poolId);
-    				Log.w(LOGTAG, String.valueOf(webView));
-    					
-    				LinearLayoutSoftKeyboardDetect parentView = (LinearLayoutSoftKeyboardDetect) webView.getParent();
-    				webViewBanner = new BannerView(webView.getContext()).loadAd(bannerSource,bannerDomain,bannerZoneId,bannerAdChangeInterval);
-					parentView.addView(webViewBanner,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, bannerHeight));
-    			}
-    		};
-    		this.cordova.getActivity().runOnUiThread(runnable);
+            this.bannerHeight = data.getInt(JSON_KEY_HEIGHT);
+            
+            // Create the AdView on the UI thread.
+            Log.w(LOGTAG, "createBannerView");
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Log.w(LOGTAG, "ShowBanner:" + poolId);
+                    Log.w(LOGTAG, String.valueOf(webView));
+                        
+                    LinearLayoutSoftKeyboardDetect parentView = (LinearLayoutSoftKeyboardDetect) webView.getParent();
+                    webViewBanner = new BannerView(webView.getContext()).loadAd(bannerSource,bannerDomain,bannerZoneId,bannerAdChangeInterval);
+                    parentView.addView(webViewBanner,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, bannerHeight * 3));
+                }
+            };
+            this.cordova.getActivity().runOnUiThread(runnable);
         } catch (JSONException exception) {
             Log.w(LOGTAG,String.format("Got JSON Exception: %s",exception.getMessage()));
             callbackContext.error(exception.getMessage());
@@ -97,9 +106,27 @@ public class AdServerPlugin extends CordovaPlugin {
     }
 
     private void executeHideBanner() {
-        if(webViewBanner != null) {
-            Log.v(LOGTAG,"Se ocultaría el Banner.");
-        }
+        Runnable runnable = new Runnable() {
+            public void run() {
+                if(webViewBanner != null) {
+                    Log.v(LOGTAG,"Se ocultaría el Banner.");
+                    ((ViewGroup)webViewBanner.getParent()).removeView(webViewBanner);
+                    webViewBanner.setVisibility(View.GONE);
+                    webViewBanner.setVisibility(View.INVISIBLE);
+                    webViewBanner.destroy();
+                    webViewBanner = null;
+
+                    webView.getParent().requestLayout();
+                    webView.requestLayout();
+                }
+            }
+        };
+        this.cordova.getActivity().runOnUiThread(runnable);
+    }
+    
+    private boolean executeIsBannerVisible(JSONArray inputs, CallbackContext callbackContext) {
+        boolean result = (webViewBanner != null) && (webViewBanner.isShown() || webViewBanner.getVisibility() != View.VISIBLE);
+        return result;
     }
     
     private String interstitialDomain = "";
@@ -108,19 +135,19 @@ public class AdServerPlugin extends CordovaPlugin {
     
     private void executeShowInterstitial(JSONArray inputs, CallbackContext callbackContext) {
         try {
-        	JSONObject data = inputs.getJSONObject(0);
-        	this.interstitialDomain = data.getString(JSON_KEY_DOMAIN);
-        	this.interstitialZoneId = data.getString(JSON_KEY_ZONE_ID);
+            JSONObject data = inputs.getJSONObject(0);
+            this.interstitialDomain = data.getString(JSON_KEY_DOMAIN);
+            this.interstitialZoneId = data.getString(JSON_KEY_ZONE_ID);
 
-        	// Create the AdView on the UI thread.
-    		Log.w(LOGTAG, "createInterstitialView");
-    		Runnable runnable = new Runnable() {
-    			public void run() {
-    				Log.w(LOGTAG, "ShowInterstitial:" + poolId);
-    				Log.w(LOGTAG, String.valueOf(webView));
-    			}
-    		};
-    		this.cordova.getActivity().runOnUiThread(runnable);
+            // Create the AdView on the UI thread.
+            Log.w(LOGTAG, "createInterstitialView");
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    Log.w(LOGTAG, "ShowInterstitial:" + poolId);
+                    Log.w(LOGTAG, String.valueOf(webView));
+                }
+            };
+            this.cordova.getActivity().runOnUiThread(runnable);
         } catch (JSONException exception) {
             Log.w(LOGTAG,String.format("Got JSON Exception: %s",exception.getMessage()));
             callbackContext.error(exception.getMessage());

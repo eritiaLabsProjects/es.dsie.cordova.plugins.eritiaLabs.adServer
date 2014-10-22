@@ -15,5 +15,9 @@ AdServer.showBanner = function(params,successCallback, errorCallback) {
 AdServer.hideBanner = function(params,successCallback, errorCallback) {
 		cordova.exec(successCallback, errorCallback, "AdServerPlugin", "hideBanner", [params]);
 	};
+AdServer.isBannerVisible = function(params,successCallback, errorCallback) {
+		cordova.exec(successCallback, errorCallback, "AdServerPlugin", "isBannerVisible", [params]);
+	};
 
+	
 module.exports = AdServer;
