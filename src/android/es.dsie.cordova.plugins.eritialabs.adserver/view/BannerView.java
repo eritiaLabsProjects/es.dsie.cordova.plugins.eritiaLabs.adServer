@@ -19,7 +19,7 @@ public class BannerView extends WebView {
 		super(context);
 	}
 	
-	public WebView loadAd(String source, String domain,String zoneId,int changeInterval) {
+	public BannerView loadAd(String source, String domain,String zoneId,int changeInterval) {
 		Random rand = new Random();
 		Log.v(LOGTAG, "BannerView.loadAd.source:" + source);
 		Log.v(LOGTAG, "BannerView.loadAd.domain:" + domain);
@@ -34,5 +34,5 @@ public class BannerView extends WebView {
 		
 		return this;
 	}
-
+	
 }
