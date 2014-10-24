@@ -55,6 +55,21 @@ public class InterstitialView extends WebView {
 
 	public InterstitialView(Context context) {
 		super(context);
+		this.getSettings().setJavaScriptEnabled(true);
+		this.getSettings().setGeolocationEnabled(true);
+		this.addJavascriptInterface(this, "iview");
+		
+		String script = 
+				"javascript:window.injectPostMessage = function(e) { \n" +  
+				"   if(typeof e == 'string') { \n" +  
+				"		iview.doPostMessage(e); \n" +  
+				"	} else { \n" +  
+				"		iview.doPostMessage(e.message); \n" +  
+				"	}\n" +  
+				"};\n";
+		
+		Log.i(LOGTAG, "InterstitialView.loadAd.script=" + script);
+		this.loadUrl(script);
 	}
 	
 	public InterstitialView loadAd(String source, String domain,String zoneId,int changeInterval) {
@@ -63,24 +78,18 @@ public class InterstitialView extends WebView {
 		Log.v(LOGTAG, "InterstitialView.loadAd.domain:" + domain);
 		Log.v(LOGTAG, "InterstitialView.loadAd.zoneId:" + zoneId);
 		Log.v(LOGTAG, "InterstitialView.loadAd.changeInterval:" + changeInterval);
-		
-		this.getSettings().setJavaScriptEnabled(true);
-		this.getSettings().setGeolocationEnabled(true);
-		this.addJavascriptInterface(this, "iview");
-		
-		String script = "javascript:window.injectPostMessage = function(e) { " +  
-				"   if(typeof e == 'string') { iview.doPostMessage(e); } else { iview.doPostMessage(e.message); }" +
-				"};";
-		Log.i(LOGTAG, "InterstitialView.loadAd.script=" + script);
-		this.loadUrl(script);
-		
+
 		String url = String.format(_TPL_URL,domain,changeInterval,zoneId,source,_TARGET,rand.nextInt(),_RETURN_URL);
 		Log.i(LOGTAG, "InterstitialView.loadAd.URL:" + url);
-		script = "javascript:setTimeout(function(){window.location.origin = 'http://adserver.eritialabs.es'; document.write(\"<scr\" + \"ipt type='text/javascript' src='" + url + "'></scr\" + \"ipt>\");},50)";
+		String script = 
+				"javascript:setTimeout( \n" +  
+				"   function(){ \n" +  
+				"   	window.location.origin = 'http://adserver.eritialabs.es';  \n" +  
+				"   	document.write(\"<scr\" + \"ipt type='text/javascript' src='" + url + "'></scr\" + \"ipt>\"); \n" +  
+				"   },50 \n" +  
+				"); \n";
 		Log.i(LOGTAG, "InterstitialView.loadAd.script=" + script);
 		this.loadUrl(script);
-		
-
 		
 		return this;
 	}

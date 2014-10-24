@@ -1,5 +1,7 @@
 package es.dsie.cordova.plugins.eritialabs.adserver;
 
+import java.util.concurrent.Callable;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.LinearLayoutSoftKeyboardDetect;
@@ -14,6 +16,7 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.TranslateAnimation;
 
+import android.animation.AnimatorSet;
 import android.transition.Visibility;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -110,7 +113,7 @@ public class AdServerPlugin extends CordovaPlugin {
                         parentView.addView(webViewBanner,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, calcHeight.intValue()));
                     }
                     webViewBanner = webViewBanner.loadAd(bannerSource,bannerDomain,bannerZoneId,bannerAdChangeInterval);
-                    slideToTopAndShow(webViewBanner);
+                    slideToTopAndShow(webViewBanner,true,null);
                 }
             };
             this.cordova.getActivity().runOnUiThread(runnable);
@@ -125,7 +128,7 @@ public class AdServerPlugin extends CordovaPlugin {
             public void run() {
                 if(webViewBanner != null) {
                     Log.v(LOGTAG,"Se ocultaría el Banner.");
-                    slideToBottomAndHide(webViewBanner);
+                    slideToBottomAndHide(webViewBanner,true,null);
 //                  ((ViewGroup)webViewBanner.getParent()).removeView(webViewBanner);
 //                  webViewBanner.destroy();
                     //webViewBanner = null;
@@ -163,12 +166,6 @@ public class AdServerPlugin extends CordovaPlugin {
             Log.w(LOGTAG, "createInterstitialView");
             Runnable runnable = new Runnable() {
                 public void run() {
-                    if(webViewBanner != null) {
-                        Log.v(LOGTAG,"Se ocultaría el Banner por el Interstitial.");
-                        //webViewBanner.setVisibility(View.GONE);
-                        slideToBottomAndHide(webViewBanner);
-                    }
-
                     Log.i(LOGTAG, "ShowInterstitial:" + poolId);
                     Log.v(LOGTAG, String.valueOf(webView));
 
@@ -197,9 +194,20 @@ public class AdServerPlugin extends CordovaPlugin {
                         parentView.addView(webViewInterstitial,new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
                     }
                     webViewInterstitial = webViewInterstitial.loadAd(interstitialSource,interstitialDomain,interstitialZoneId,interstitialAdChangeInterval);
-                    slideToLeftAndShow(webViewInterstitial);
-                    //webViewInterstitial.requestFocus();
                     
+                    if(webViewBanner != null) {
+                        Log.v(LOGTAG,"Se ocultaría el Banner por el Interstitial.");
+                        webViewBanner.setVisibility(View.GONE);
+                        //slideToBottomAndHide(webViewBanner,false);
+                        /*slideToBottomAndHide(webViewBanner,true,new Callable() {
+                            @Override
+                            public Object call() throws Exception {*/
+                                /*return*/ slideToLeftAndShow(webViewInterstitial,true,null);
+                            /*}
+                        });*/
+                    } else {
+                        slideToLeftAndShow(webViewInterstitial,true,null);
+                    }
                 }
             };
             this.cordova.getActivity().runOnUiThread(runnable);
@@ -215,20 +223,19 @@ public class AdServerPlugin extends CordovaPlugin {
             public void run() {
                 if(webViewInterstitial != null) {
                     Log.v(LOGTAG,"Se ocultaría el Interstitial.");
-                    slideToRightAndHide(webViewInterstitial);
-                    //((ViewGroup)webViewInterstitial.getParent()).removeView(webViewInterstitial);
-//                  webViewInterstitial.setVisibility(View.GONE);
-//                  webViewInterstitial.setVisibility(View.INVISIBLE);
-                    //webViewInterstitial.destroy();
-                    //webViewInterstitial = null;
-
-                    //webView.getParent().requestLayout();
-                    //webView.requestLayout();
-                }
-                if((webViewBanner != null) && (webViewBanner.isShown() || webViewBanner.getVisibility() != View.VISIBLE)) {
-                    Log.v(LOGTAG,"Se mostraría el Banner.");
-                    slideToTopAndShow(webViewBanner);
-                    //webViewBanner.setVisibility(View.VISIBLE);
+                    if((webViewBanner != null) && (webViewBanner.isShown() || webViewBanner.getVisibility() != View.VISIBLE)) {
+                        Log.v(LOGTAG,"Se mostraría el Banner.");
+                        //slideToTopAndShow(webViewBanner,true);
+                        //webViewBanner.setVisibility(View.VISIBLE);
+                        slideToRightAndHide(webViewInterstitial,true,new Callable() {
+                            @Override
+                            public Object call() throws Exception {
+                                return slideToTopAndShow(webViewBanner,true,null);
+                            }
+                        });
+                    } else {
+                        slideToRightAndHide(webViewInterstitial,true,null);
+                    }
                 }
             }
         };
@@ -242,7 +249,7 @@ public class AdServerPlugin extends CordovaPlugin {
     
     private int _duration = 500;
     
-    public void slideToBottomAndHide(final View view){
+    public Animation slideToBottomAndHide(final View view, boolean autoStart,final Callable callback){
         final View parentView = (View)webView.getParent();
         int from = 0;//view.getTop();
         int to = view.getHeight();
@@ -255,6 +262,12 @@ public class AdServerPlugin extends CordovaPlugin {
             public void onAnimationEnd(Animation animation) {
                 view.setVisibility(View.GONE);
                 parentView.requestLayout();
+                try {
+                    if(callback != null) {
+                        callback.call();
+                    }
+                } catch (Exception e) {
+                }
             }
             @Override
             public void onAnimationRepeat(Animation animation) {
@@ -265,10 +278,13 @@ public class AdServerPlugin extends CordovaPlugin {
                 parentView.requestLayout();
             }
         });
-        view.startAnimation(animate);
+        if(autoStart) {
+            view.startAnimation(animate);
+        }
+        return animate;
     }
     
-    public void slideToTopAndShow(final View view){
+    public Animation slideToTopAndShow(final View view, boolean autoStart,final Callable callback){
         final  View parentView = (View)webView.getParent();
         int from = 0;//parentView.getHeight();
         int to = (-view.getHeight());
@@ -281,6 +297,12 @@ public class AdServerPlugin extends CordovaPlugin {
             public void onAnimationEnd(Animation animation) {
                 parentView.requestLayout();
                 view.setVisibility(View.VISIBLE);
+                try {
+                    if(callback != null) {
+                        callback.call();
+                    }
+                } catch (Exception e) {
+                }
             }
             @Override
             public void onAnimationRepeat(Animation animation) {
@@ -291,10 +313,13 @@ public class AdServerPlugin extends CordovaPlugin {
                 parentView.requestLayout();
             }
         });
-        view.startAnimation(animate);
+        if(autoStart) {
+            view.startAnimation(animate);
+        }
+        return animate;
     }
     
-    public void slideToLeftAndShow(final View view){
+    public Animation slideToLeftAndShow(final View view, boolean autoStart,final Callable callback){
         final  View parentView = (View)webView.getParent();
         TranslateAnimation animate = new TranslateAnimation(view.getWidth(),0,0,0);
         animate.setDuration(_duration);
@@ -305,6 +330,12 @@ public class AdServerPlugin extends CordovaPlugin {
                 parentView.requestLayout();
                 view.setVisibility(View.VISIBLE);
                 view.requestFocus();
+                try {
+                    if(callback != null) {
+                        callback.call();
+                    }
+                } catch (Exception e) {
+                }
             }
             @Override
             public void onAnimationRepeat(Animation animation) {
@@ -316,10 +347,13 @@ public class AdServerPlugin extends CordovaPlugin {
                 
             }
         });
-        view.startAnimation(animate);
+        if(autoStart) {
+            view.startAnimation(animate);
+        }
+        return animate;
     }
     
-    public void slideToRightAndHide(final View view){
+    public Animation slideToRightAndHide(final View view, boolean autoStart,final Callable callback){
         final View parentView = (View)webView.getParent();
         TranslateAnimation animate = new TranslateAnimation(0,view.getWidth(),0,0);
         animate.setDuration(_duration);
@@ -329,6 +363,12 @@ public class AdServerPlugin extends CordovaPlugin {
             public void onAnimationEnd(Animation animation) {
                 parentView.requestLayout();
                 view.setVisibility(View.GONE);
+                try {
+                    if(callback != null) {
+                        callback.call();
+                    }
+                } catch (Exception e) {
+                }
             }
             @Override
             public void onAnimationRepeat(Animation animation) {
@@ -339,7 +379,10 @@ public class AdServerPlugin extends CordovaPlugin {
                 parentView.requestLayout();
             }
         });
-        view.startAnimation(animate);
+        if(autoStart) {
+            view.startAnimation(animate);
+        }
+        return animate;
     }
 
 
