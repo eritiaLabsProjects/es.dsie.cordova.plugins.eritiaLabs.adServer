@@ -26,6 +26,7 @@ public class InterstitialView extends WebView {
 									"&buttonsize=14" + 
 									"&deferclose=5" +
 									"&noborder=t";
+	private final String _TPL_URL_S = "%s/www/delivery/afr.php?refresh=%d&zoneid=%s&source=%s&target=%s&cb=%d&ct0=%s";	
 	
 	/*
 	 * ox_u += "zoneid=" + (QueryString.zoneid?QueryString.zoneid:"6");
@@ -79,17 +80,18 @@ public class InterstitialView extends WebView {
 		Log.v(LOGTAG, "InterstitialView.loadAd.zoneId:" + zoneId);
 		Log.v(LOGTAG, "InterstitialView.loadAd.changeInterval:" + changeInterval);
 
-		String url = String.format(_TPL_URL,domain,changeInterval,zoneId,source,_TARGET,rand.nextInt(),_RETURN_URL);
-		Log.i(LOGTAG, "InterstitialView.loadAd.URL:" + url);
-		String script = 
-				"javascript:setTimeout( \n" +  
-				"   function(){ \n" +  
-				"   	window.location.origin = 'http://adserver.eritialabs.es';  \n" +  
-				"   	document.write(\"<scr\" + \"ipt type='text/javascript' src='" + url + "'></scr\" + \"ipt>\"); \n" +  
-				"   },50 \n" +  
-				"); \n";
-		Log.i(LOGTAG, "InterstitialView.loadAd.script=" + script);
-		this.loadUrl(script);
+//		String url = String.format(_TPL_URL,domain,changeInterval,zoneId,source,_TARGET,rand.nextInt(),_RETURN_URL);
+//		Log.i(LOGTAG, "InterstitialView.loadAd.URL:" + url);
+//		String script = 
+//				"javascript:setTimeout( \n" +  
+//				"   function(){ \n" +  
+//				"   	window.location.origin = 'http://adserver.eritialabs.es';  \n" +  
+//				"   	document.write(\"<scr\" + \"ipt type='text/javascript' src='" + url + "'></scr\" + \"ipt>\"); \n" +  
+//				"   },50 \n" +  
+//				"); \n";
+//		Log.i(LOGTAG, "InterstitialView.loadAd.script=" + script);
+		String url = String.format(_TPL_URL_S,domain,changeInterval,zoneId,source,_TARGET,rand.nextInt(),_RETURN_URL);
+		this.loadUrl(url);
 		
 		return this;
 	}
