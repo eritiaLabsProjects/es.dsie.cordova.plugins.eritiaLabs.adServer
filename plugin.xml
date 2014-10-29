@@ -45,6 +45,7 @@
 
         <source-file src="src/android/es.dsie.cordova.plugins.eritialabs.adserver/AdServerPlugin.java" target-dir="src/es/dsie/cordova/plugins/eritialabs/adserver"/>
         <source-file src="src/android/es.dsie.cordova.plugins.eritialabs.adserver/view/BannerView.java" target-dir="src/es/dsie/cordova/plugins/eritialabs/adserver/view"/>
+        <source-file src="src/android/es.dsie.cordova.plugins.eritialabs.adserver/view/InterstitialView.java" target-dir="src/es/dsie/cordova/plugins/eritialabs/adserver/view"/>
 
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
@@ -63,7 +64,18 @@
 
     <!-- ios -->
     <platform name="ios">
-        
+        <feature name="AdServerPlugin">
+          <param name="ios-package" value="AdServerPlugin"/>
+        </feature>
+
+        <header-file src="src/ios/AdServerPlugin.h" />
+        <source-file src="src/ios/AdServerPlugin.m" />
+
+        <header-file src="src/ios/BannerView.h" />
+        <source-file src="src/ios/BannerView.m" />
+
+        <header-file src="src/ios/InterstitialView.h" />
+        <source-file src="src/ios/InterstitialView.m" />
     </platform>
 
 </plugin>
