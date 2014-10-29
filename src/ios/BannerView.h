@@ -1,8 +1,12 @@
 @interface BannerView : UIViewController<UIWebViewDelegate> {
-    UIWebView* mBannerView;
-
-    - (void) loadAd:(String *)command (String *) source (String *) domain (String *) zoneId (int *) changeInterval;
+    @public UIWebView* bannerView;
+    @public NSString* source;
+    @public NSString* domain;
+    @public NSString* zoneId;
+    @public NSNumber* changeInterval;
 }
+
+ - (UIWebView*) loadAd;
 
 @property (nonatomic, retain) IBOutlet UIWebView* bannerView;
 

@@ -1,4 +1,4 @@
-@import "AdServerPlugin.h"
+#import "AdServerPlugin.h"
 
 @implementation AdServerPlugin
 
@@ -19,26 +19,24 @@
 #define JSON_KEY_SOURCE       @"source"
 #define JSON_KEY_HEIGHT       @"height"
 
-@synthesize poolId = "";
-@synthesize _duration = 500;
-
 @synthesize parentView;
-
-@synthesize bannerSource = "";
-@synthesize bannerDomain = "";
-@synthesize bannerZoneId = "";
-@synthesize bannerAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
-@synthesize bannerHeight = DEFAULT_AD_HEIGHT;
 @synthesize webViewBanner;
 
-@synthesize interstitialSource = "";
-@synthesize interstitialDomain = "";
-@synthesize interstitialZoneId = "";
-@synthesize interstitialAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
-
-@synthesize webViewInterstitial;
-
 #pragma mark Cordova JS bridge
+
+NSString* poolId;
+NSNumber* duration;
+NSString* bannerSource;
+NSString* bannerDomain;
+NSString* bannerZoneId;
+NSNumber* bannerAdChangeInterval;
+NSString* bannerHeight;
+
+NSString* interstitialSource;
+NSString* interstitialDomain;
+NSString* interstitialZoneId;
+NSNumber* interstitialAdChangeInterval;
+
 
 - (AdServerPlugin *)initWithWebView:(UIWebView *)theWebView {
 	self = (AdServerPlugin *)[super initWithWebView:theWebView];
@@ -53,16 +51,30 @@
 			name:UIDeviceOrientationDidChangeNotification
 			object:nil];*/
 
-		UIView* parentView = self.webView;// : [self.webView superview];
+		//parentView = self.webView;
+        parentView = [self.webView superview];
 	}
+    poolId = @"";
+    duration = @500;
+    
+    bannerSource = @"";
+    bannerDomain = @"";
+    bannerZoneId = @"";
+    bannerAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
+    bannerHeight = DEFAULT_AD_HEIGHT;
+
+    interstitialSource = @"";
+    interstitialDomain = @"";
+    interstitialZoneId = @"";
+    interstitialAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
     
     srand(time(NULL));
 	return self;
 }
 
-- (void) executeShowBanner:(CDVInvokedUrlCommand *)command
+- (void) showBanner:(CDVInvokedUrlCommand *)command
 {
-    NSLog(@"executeShowBanner");
+    NSLog(@"showBanner");
     
     CDVPluginResult *pluginResult;
     NSString *callbackId = command.callbackId;
@@ -79,11 +91,32 @@
         bannerHeight = [options objectForKey:JSON_KEY_HEIGHT];
     }
 
-    self.bannerView = [[BannerView alloc] initWithAdSize:adSize];
+    self.webViewBanner = [BannerView alloc];// initWithAdSize:adSize];
 
-    webViewBanner = webViewBanner.loadAd(bannerSource,bannerDomain,bannerZoneId,bannerAdChangeInterval);
+    webViewBanner->source = bannerSource;
+    webViewBanner->domain = bannerDomain;
+    webViewBanner->zoneId = bannerZoneId;
+    webViewBanner->changeInterval = bannerAdChangeInterval;
+    
+    NSLog(@"showBanner.loadAd");
+    [self.webViewBanner loadAd];
 
-    [self.webViewBanner loadAd:[self __buildAdRequest]];
+    NSLog(@"showBanner.adSubView");
+    
+    webViewBanner.bannerView.frame = CGRectMake(
+                        0,
+                        parentView.frame.size.height - 60,
+                        parentView.frame.size.width,
+                        60);
+    self.parentView.frame = CGRectMake(0,
+                               0,
+                               parentView.frame.size.width,
+                               parentView.frame.size.height - 60);
+
+    
+    [self.parentView addSubview:webViewBanner.bannerView];
+    
+    [self.parentView bringSubviewToFront:webViewBanner.bannerView];
     
 
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -91,4 +124,4 @@
 }
 
 
-@end
+@ends
