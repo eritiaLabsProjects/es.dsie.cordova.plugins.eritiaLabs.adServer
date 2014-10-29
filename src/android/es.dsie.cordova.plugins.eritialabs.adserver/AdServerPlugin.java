@@ -46,6 +46,23 @@ public class AdServerPlugin extends CordovaPlugin {
     private static final String JSON_KEY_HEIGHT = "height";
     
     private String poolId = "";
+    private int _duration = 500;
+
+    private String bannerSource = "";
+    private String bannerDomain = "";
+    private String bannerZoneId = "";
+    private int    bannerAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
+    private int    bannerHeight = DEFAULT_AD_HEIGHT;
+    private BannerView webViewBanner = null;
+
+    private String interstitialSource = "";
+    private String interstitialDomain = "";
+    private String interstitialZoneId = "";
+    private int    interstitialAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
+
+    private InterstitialView webViewInterstitial = null;
+
+
 
     @Override
     public boolean execute(String action, JSONArray inputs, CallbackContext callbackContext) throws JSONException {
@@ -75,14 +92,6 @@ public class AdServerPlugin extends CordovaPlugin {
         }
         return false;
     }
-
-    private String bannerSource = "";
-    private String bannerDomain = "";
-    private String bannerZoneId = "";
-    private int    bannerAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
-    private int    bannerHeight = DEFAULT_AD_HEIGHT;
-
-    private BannerView webViewBanner = null;
     
     private void executeShowBanner(JSONArray inputs, CallbackContext callbackContext) {
         
@@ -144,14 +153,6 @@ public class AdServerPlugin extends CordovaPlugin {
         boolean result = (webViewBanner != null) && (webViewBanner.isShown() || webViewBanner.getVisibility() != View.VISIBLE);
         return result;
     }
-    
-    private String interstitialSource = "";
-    private String interstitialDomain = "";
-    private String interstitialZoneId = "";
-    private int    interstitialAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
-
-    private InterstitialView webViewInterstitial = null;
-
     
     private void executeShowInterstitial(JSONArray inputs, CallbackContext callbackContext) {
         executeHideInterstitial();
@@ -246,8 +247,6 @@ public class AdServerPlugin extends CordovaPlugin {
         boolean result = (webViewInterstitial != null) && (webViewInterstitial.isShown() || webViewInterstitial.getVisibility() != View.VISIBLE);
         return result;
     }
-    
-    private int _duration = 500;
     
     public Animation slideToBottomAndHide(final View view, boolean autoStart,final Callable callback){
         final View parentView = (View)webView.getParent();
