@@ -64,9 +64,11 @@
 
     <!-- ios -->
     <platform name="ios">
-        <feature name="AdServerPlugin">
-          <param name="ios-package" value="AdServerPlugin"/>
-        </feature>
+        <config-file target="config.xml" parent="/*">
+          <feature name="AdServerPlugin">
+            <param name="ios-package" value="AdServerPlugin"/>
+          </feature>
+        </config-file>
 
         <header-file src="src/ios/AdServerPlugin.h" />
         <source-file src="src/ios/AdServerPlugin.m" />
