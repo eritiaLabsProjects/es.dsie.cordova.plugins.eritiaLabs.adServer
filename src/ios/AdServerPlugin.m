@@ -21,6 +21,7 @@
 
 @synthesize parentView;
 @synthesize webViewBanner;
+@synthesize webViewInterstitial;
 
 #pragma mark Cordova JS bridge
 
@@ -90,8 +91,16 @@ NSNumber* interstitialAdChangeInterval;
         bannerAdChangeInterval = [options objectForKey:JSON_KEY_CHANGE_INTERVAL];
         bannerHeight = [options objectForKey:JSON_KEY_HEIGHT];
     }
-
-    self.webViewBanner = [BannerView alloc];// initWithAdSize:adSize];
+    if(self.webViewBanner == NULL ) {
+        self.webViewBanner = [BannerView alloc];// initWithAdSize:adSize];
+        
+        NSLog(@"showBanner.adSubView");
+        
+        
+        [self.parentView addSubview:webViewBanner.bannerView];
+        
+        [self.parentView bringSubviewToFront:webViewBanner.bannerView];
+    }
 
     webViewBanner->source = bannerSource;
     webViewBanner->domain = bannerDomain;
@@ -99,29 +108,93 @@ NSNumber* interstitialAdChangeInterval;
     webViewBanner->changeInterval = bannerAdChangeInterval;
     
     NSLog(@"showBanner.loadAd");
-    [self.webViewBanner loadAd];
-
-    NSLog(@"showBanner.adSubView");
+    [webViewBanner loadAd:parentView ];
     
-    webViewBanner.bannerView.frame = CGRectMake(
-                        0,
-                        parentView.frame.size.height - 60,
-                        parentView.frame.size.width,
-                        60);
-    self.parentView.frame = CGRectMake(0,
-                               0,
-                               parentView.frame.size.width,
-                               parentView.frame.size.height - 60);
+    self.webView.frame = CGRectMake(0,
+                                    0,
+                                    parentView.frame.size.width,
+                                    parentView.frame.size.height - 60);
+    self.parentView.layoutSubviews;
 
     
-    [self.parentView addSubview:webViewBanner.bannerView];
-    
-    [self.parentView bringSubviewToFront:webViewBanner.bannerView];
-    
+    if(webViewBanner.bannerView.hidden == true) {
+        NSLog(@"showBanner.Restore Hidden");
+        webViewBanner.bannerView.hidden = false;
+    }
 
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
 
+- (void) hideBanner:(CDVInvokedUrlCommand *)command {
+    NSLog(@"hideBanner");
+    CDVPluginResult *pluginResult;
+    NSString *callbackId = command.callbackId;
+    
+    if(self.webViewBanner != NULL) {
+        webViewBanner.bannerView.hidden = true;
+    }
+   
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+}
 
-@ends
+- (void) showInterstitial:(CDVInvokedUrlCommand *)command:(CDVInvokedUrlCommand *)command
+{
+    NSLog(@"showInterstitial");
+    
+    CDVPluginResult *pluginResult;
+    NSString *callbackId = command.callbackId;
+    NSArray* args = command.arguments;
+    
+	NSUInteger argc = [args count];
+    if( argc >= 1 ) {
+        NSDictionary* options = [command.arguments objectAtIndex:0 withDefault:[NSNull null]];
+        
+        interstitialSource = [options objectForKey:JSON_KEY_SOURCE];
+        interstitialDomain = [options objectForKey:JSON_KEY_DOMAIN];
+        interstitialZoneId = [options objectForKey:JSON_KEY_ZONE_ID];
+        interstitialAdChangeInterval = [options objectForKey:JSON_KEY_CHANGE_INTERVAL];
+    }
+    if(self.webViewInterstitial == NULL ) {
+        self.webViewInterstitial = [InterstitialView alloc];// initWithAdSize:adSize];
+        
+        [self.parentView addSubview:webViewInterstitial.interstitialView];
+        
+        [self.parentView bringSubviewToFront:webViewInterstitial.interstitialView];
+    }
+    
+    webViewInterstitial->source = interstitialSource;
+    webViewInterstitial->domain = interstitialDomain;
+    webViewInterstitial->zoneId = interstitialZoneId;
+    webViewInterstitial->changeInterval = interstitialAdChangeInterval;
+    
+    NSLog(@"showInterstitial.loadAd");
+    [webViewBanner loadAd:parentView ];
+    
+    
+    if(webViewInterstitial.interstitialView.hidden == true) {
+        NSLog(@"showInterstitial.Restore Hidden");
+        webViewInterstitial.interstitialView.hidden = false;
+    }
+    
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+}
+
+- (void) hideInterstitial:(CDVInvokedUrlCommand *)command {
+    NSLog(@"hideInterstitial");
+    CDVPluginResult *pluginResult;
+    NSString *callbackId = command.callbackId;
+    
+    if(self.webViewInterstitial != NULL) {
+        webViewInterstitial.interstitialView.hidden = true;
+    }
+    
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+}
+
+
+
+@end

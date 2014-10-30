@@ -7,22 +7,38 @@
 #define _TARGET = "_system"; 
 #define _RETURN_URL = "URL";
 
-- (UIWebView*) loadAd
+- (UIWebView*) loadAd:(UIView *) parentView
 {
-    NSString *auxUrl = [NSString stringWithFormat:@"%@/www/delivery/afr.php?refresh=%@&zoneid=%@&source=%@&target=%@&cb=%@&ct0=%@",domain,changeInterval,zoneId,source,@"_system",@"100",@"URL"];
+    NSString *auxUrl = [NSString stringWithFormat:@"%@/www/delivery/afr.php?refresh=%@&zoneid=%@&source=%@&target=%@&cb=%d&ct0=%@",domain,changeInterval,zoneId,source,@"_system",rand(),@"URL"];
     
     NSLog(auxUrl);
     
-    bannerView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+    
+    NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.height]);
+    NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.width]);
+    
+    bannerView = [[UIWebView alloc] initWithFrame:CGRectMake(0,
+                                                             0,
+                                                             parentView.frame.size.width,
+                                                             parentView.frame.size.height)];
     //bannerView = [UIWebView alloc];
     bannerView.delegate = self;
-    //bannerView.scalesPageToFit = YES;
+    bannerView.scalesPageToFit = YES;
     
     NSURL* url = [NSURL URLWithString:auxUrl];
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
     [self.bannerView loadRequest:request];
     
     return bannerView;
+}
+
+-(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
+    if ( inType == UIWebViewNavigationTypeLinkClicked ) {
+        [[UIApplication sharedApplication] openURL:[inRequest URL]];
+        return NO;
+    }
+    
+    return YES;
 }
 
 @end
