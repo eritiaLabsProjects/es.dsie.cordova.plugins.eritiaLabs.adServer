@@ -10,7 +10,7 @@
 @property (nonatomic, copy) NSString* callbackId;
 @property (nonatomic, retain) UIView* parentView;
 @property (nonatomic, retain) BannerView* webViewBanner;
-//@property (nonatomic, retain) InterstitialView* webViewInterstitial;
+@property (nonatomic, retain) InterstitialView* webViewInterstitial;
 
 - (void) executeShowBanner:(CDVInvokedUrlCommand *)command;
 - (void) showBanner:(CDVInvokedUrlCommand *)command;

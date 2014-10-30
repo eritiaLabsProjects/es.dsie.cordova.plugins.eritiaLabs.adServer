@@ -139,7 +139,7 @@ NSNumber* interstitialAdChangeInterval;
     [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
 
-- (void) showInterstitial:(CDVInvokedUrlCommand *)command:(CDVInvokedUrlCommand *)command
+- (void) showInterstitial:(CDVInvokedUrlCommand *)command
 {
     NSLog(@"showInterstitial");
     
@@ -170,7 +170,7 @@ NSNumber* interstitialAdChangeInterval;
     webViewInterstitial->changeInterval = interstitialAdChangeInterval;
     
     NSLog(@"showInterstitial.loadAd");
-    [webViewBanner loadAd:parentView ];
+    [webViewInterstitial loadAd:parentView ];
     
     
     if(webViewInterstitial.interstitialView.hidden == true) {

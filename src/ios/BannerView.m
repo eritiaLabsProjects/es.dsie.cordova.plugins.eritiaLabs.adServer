@@ -18,9 +18,9 @@
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.width]);
     
     bannerView = [[UIWebView alloc] initWithFrame:CGRectMake(0,
-                                                             0,
+                                                             parentView.frame.size.height - 60,
                                                              parentView.frame.size.width,
-                                                             parentView.frame.size.height)];
+                                                             60)];
     //bannerView = [UIWebView alloc];
     bannerView.delegate = self;
     bannerView.scalesPageToFit = YES;
