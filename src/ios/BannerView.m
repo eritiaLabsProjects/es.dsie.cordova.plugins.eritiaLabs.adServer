@@ -24,7 +24,7 @@
     //bannerView = [UIWebView alloc];
     //bannerView.delegate = self;
     [bannerView setDelegate:self];
-    [bannerView setScalesPageToFit:YES];
+    [bannerView setScalesPageToFit:NO];
     
     NSURL* url = [NSURL URLWithString:auxUrl];
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
@@ -33,13 +33,13 @@
     return bannerView;
 }
 
--(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
+/*-(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
     if ( inType == UIWebViewNavigationTypeLinkClicked ) {
         [[UIApplication sharedApplication] openURL:[inRequest URL]];
         return NO;
     }
     
     return YES;
-}
+}*/
 
 @end

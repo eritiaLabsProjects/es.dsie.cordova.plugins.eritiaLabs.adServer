@@ -52,8 +52,8 @@ NSNumber* interstitialAdChangeInterval;
          name:UIDeviceOrientationDidChangeNotification
          object:nil];*/
         
-        //parentView = self.webView;
-        parentView = [self.webView superview];
+        parentView = self.webView;
+        //parentView = [self.webView superview];
     }
     poolId = @"";
     duration = @500;
@@ -91,15 +91,13 @@ NSNumber* interstitialAdChangeInterval;
         bannerAdChangeInterval = [options objectForKey:JSON_KEY_CHANGE_INTERVAL];
         bannerHeight = [options objectForKey:JSON_KEY_HEIGHT];
     }
+    bool need2Add = false;
+    
     if(self.webViewBanner == nil ) {
         self.webViewBanner = [BannerView alloc];// initWithAdSize:adSize];
         
         NSLog(@"showBanner.adSubView");
-        
-        
-        [self.parentView addSubview:webViewBanner.bannerView];
-        
-        [self.parentView bringSubviewToFront:webViewBanner.bannerView];
+        need2Add = true;
     }
     
     webViewBanner->source = bannerSource;
@@ -109,6 +107,10 @@ NSNumber* interstitialAdChangeInterval;
     
     NSLog(@"showBanner.loadAd");
     [webViewBanner loadAd:parentView ];
+    if(need2Add == true) {
+        [self.parentView addSubview:webViewBanner.bannerView];
+        [self.parentView bringSubviewToFront:webViewBanner.bannerView];
+    }
     
     int w = parentView.frame.size.width;
     int h = parentView.frame.size.height - 60;
@@ -155,13 +157,12 @@ NSNumber* interstitialAdChangeInterval;
         interstitialZoneId = [options objectForKey:JSON_KEY_ZONE_ID];
         interstitialAdChangeInterval = [options objectForKey:JSON_KEY_CHANGE_INTERVAL];
     }
+    bool need2Add = false;
     if(self.webViewInterstitial == nil ) {
         self.webViewInterstitial = [InterstitialView alloc];// initWithAdSize:adSize];
-        
-        [self.parentView addSubview:webViewInterstitial.interstitialView];
-        
-        [self.parentView bringSubviewToFront:webViewInterstitial.interstitialView];
+        need2Add = true;
     }
+    //[self hideBanner];
     
     webViewInterstitial->source = interstitialSource;
     webViewInterstitial->domain = interstitialDomain;
@@ -170,8 +171,10 @@ NSNumber* interstitialAdChangeInterval;
     
     NSLog(@"showInterstitial.loadAd");
     [webViewInterstitial loadAd:parentView ];
-    
-    
+    if(need2Add == true) {
+        [self.parentView addSubview:webViewInterstitial.interstitialView];
+        [self.parentView bringSubviewToFront:webViewInterstitial.interstitialView];
+    }
     if(webViewInterstitial.interstitialView.hidden == true) {
         NSLog(@"showInterstitial.Restore Hidden");
         webViewInterstitial.interstitialView.hidden = false;

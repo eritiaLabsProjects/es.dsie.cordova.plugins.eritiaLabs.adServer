@@ -9,25 +9,26 @@
 
 - (UIWebView*) loadAd:(UIView *) parentView
 {
-    NSString *auxUrl = [NSString stringWithFormat:@"%@/www/delivery/al.php?refresh=%@&zoneid=%@&source=%@&target=%@&cb=%d&ct0=%@&adstext=Ads&closebutton=special&layerstyle=simple&align=center&valign=middle&padding=10&buttonsize=14&deferclose=5&noborder=t",domain,changeInterval,zoneId,source,@"_system",rand(),@"URL"];
-    
-    NSLog(auxUrl);
-    
-    
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.height]);
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.width]);
     
-    interstitialView = [[UIWebView alloc] initWithFrame:CGRectMake(0,
-                                                                   0,
-                                                                   parentView.frame.size.width,
-                                                                   parentView.frame.size.height)];
-    //interstitialView = [UIWebView alloc];
+    int y = 20;
+    int h = parentView.frame.size.height - y;
+    
+    interstitialView = [[UIWebView alloc] initWithFrame:CGRectMake(0,y,parentView.frame.size.width,h)];
     interstitialView.delegate = self;
     interstitialView.scalesPageToFit = YES;
     
-    /*NSURL* url = [NSURL URLWithString:auxUrl];
-     NSURLRequest* request = [NSURLRequest requestWithURL:url];
-     [self.interstitialView loadRequest:request];*/
+    NSURL* reqUrl = [NSURL URLWithString:@""];//bacoSchemaApp://showInterstitial];
+    NSURLRequest* request = [NSURLRequest requestWithURL:reqUrl];
+    [interstitialView loadRequest:request];
+    
+    return interstitialView;
+}
+
+-(void)webViewDidFinishLoad:(UIWebView *)webView {
+    NSString *auxUrl = [NSString stringWithFormat:@"%@/www/delivery/al.php?refresh=%@&zoneid=%@&source=%@&target=%@&cb=%d&ct0=%@&adstext=Ads&closebutton=special&layerstyle=simple&align=center&valign=middle&padding=10&buttonsize=14&deferclose=5&noborder=t",domain,changeInterval,zoneId,source,@"_system",rand(),@"URL"];
+    NSLog(auxUrl);
     NSString *url = [NSString stringWithFormat:@"javascript:setTimeout( \n"
                      "   function(){ \n"
                      "       window.location.origin = 'http://adserver.eritialabs.es';  \n"
@@ -38,10 +39,6 @@
                      "); \n",auxUrl];
     
     [interstitialView stringByEvaluatingJavaScriptFromString:url];
-    NSURLRequest* request = [NSURLRequest requestWithURL:@"file://"];
-    [interstitialView loadRequest:request];
-    
-    return interstitialView;
 }
 
 -(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
