@@ -7,17 +7,18 @@
 #define _TARGET = "_system";
 #define _RETURN_URL = "URL";
 
-- (UIWebView*) loadAd:(UIView *) parentView
+- (UIWebView*) loadAd:(UIView *) parentView:(UIWebView *) bannerView
 {
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.height]);
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.width]);
     
     int y = 20;
-    int h = parentView.frame.size.height - y;
+    int h = parentView.frame.size.height - y + bannerView.frame.size.height;
     
+    [bannerView setHidden:TRUE];
     interstitialView = [[UIWebView alloc] initWithFrame:CGRectMake(0,y,parentView.frame.size.width,h)];
     interstitialView.delegate = self;
-    interstitialView.scalesPageToFit = YES;
+    interstitialView.scalesPageToFit = NO;
     
     NSURL* reqUrl = [NSURL URLWithString:@""];//bacoSchemaApp://showInterstitial];
     NSURLRequest* request = [NSURLRequest requestWithURL:reqUrl];
