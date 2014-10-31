@@ -4,7 +4,7 @@
 @synthesize bannerView;
 
 #define _TPL_URL = "%@/www/delivery/afr.php?refresh=%@&zoneid=%@&source=%@&target=%@&cb=%@&ct0=%@";
-#define _TARGET = "_system"; 
+#define _TARGET = "_system";
 #define _RETURN_URL = "URL";
 
 - (UIWebView*) loadAd:(UIView *) parentView
@@ -17,17 +17,18 @@
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.height]);
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.width]);
     
-    bannerView = [[UIWebView alloc] initWithFrame:CGRectMake(0,
-                                                             parentView.frame.size.height - 60,
-                                                             parentView.frame.size.width,
-                                                             60)];
+    int y = parentView.frame.size.height - 60;
+    int w = parentView.frame.size.width;
+    
+    bannerView = [[UIWebView alloc] initWithFrame:CGRectMake(0,y,w,60)];
     //bannerView = [UIWebView alloc];
-    bannerView.delegate = self;
-    bannerView.scalesPageToFit = YES;
+    //bannerView.delegate = self;
+    [bannerView setDelegate:self];
+    [bannerView setScalesPageToFit:YES];
     
     NSURL* url = [NSURL URLWithString:auxUrl];
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
-    [self.bannerView loadRequest:request];
+    [bannerView loadRequest:request];
     
     return bannerView;
 }

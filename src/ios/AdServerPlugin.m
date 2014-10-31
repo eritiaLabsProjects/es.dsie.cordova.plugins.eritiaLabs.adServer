@@ -40,21 +40,21 @@ NSNumber* interstitialAdChangeInterval;
 
 
 - (AdServerPlugin *)initWithWebView:(UIWebView *)theWebView {
-	self = (AdServerPlugin *)[super initWithWebView:theWebView];
-	if (self) {
-		// These notifications are required for re-placing the ad on orientation
-		// changes. Start listening for notifications here since we need to
-		// translate the Smart Banner constants according to the orientation.
-		/*[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-		[[NSNotificationCenter defaultCenter]
-			addObserver:self
-			selector:@selector(deviceOrientationChange:)
-			name:UIDeviceOrientationDidChangeNotification
-			object:nil];*/
-
-		//parentView = self.webView;
+    self = (AdServerPlugin *)[super initWithWebView:theWebView];
+    if (self) {
+        // These notifications are required for re-placing the ad on orientation
+        // changes. Start listening for notifications here since we need to
+        // translate the Smart Banner constants according to the orientation.
+        /*[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+         [[NSNotificationCenter defaultCenter]
+         addObserver:self
+         selector:@selector(deviceOrientationChange:)
+         name:UIDeviceOrientationDidChangeNotification
+         object:nil];*/
+        
+        //parentView = self.webView;
         parentView = [self.webView superview];
-	}
+    }
     poolId = @"";
     duration = @500;
     
@@ -63,14 +63,14 @@ NSNumber* interstitialAdChangeInterval;
     bannerZoneId = @"";
     bannerAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
     bannerHeight = DEFAULT_AD_HEIGHT;
-
+    
     interstitialSource = @"";
     interstitialDomain = @"";
     interstitialZoneId = @"";
     interstitialAdChangeInterval = DEFAULT_AD_CHANGE_INTERVAL;
     
     srand(time(NULL));
-	return self;
+    return self;
 }
 
 - (void) showBanner:(CDVInvokedUrlCommand *)command
@@ -81,17 +81,17 @@ NSNumber* interstitialAdChangeInterval;
     NSString *callbackId = command.callbackId;
     NSArray* args = command.arguments;
     
-	NSUInteger argc = [args count];
+    NSUInteger argc = [args count];
     if( argc >= 1 ) {
         NSDictionary* options = [command.arguments objectAtIndex:0 withDefault:[NSNull null]];
-
+        
         bannerSource = [options objectForKey:JSON_KEY_SOURCE];
         bannerDomain = [options objectForKey:JSON_KEY_DOMAIN];
         bannerZoneId = [options objectForKey:JSON_KEY_ZONE_ID];
         bannerAdChangeInterval = [options objectForKey:JSON_KEY_CHANGE_INTERVAL];
         bannerHeight = [options objectForKey:JSON_KEY_HEIGHT];
     }
-    if(self.webViewBanner == NULL ) {
+    if(self.webViewBanner == nil ) {
         self.webViewBanner = [BannerView alloc];// initWithAdSize:adSize];
         
         NSLog(@"showBanner.adSubView");
@@ -101,7 +101,7 @@ NSNumber* interstitialAdChangeInterval;
         
         [self.parentView bringSubviewToFront:webViewBanner.bannerView];
     }
-
+    
     webViewBanner->source = bannerSource;
     webViewBanner->domain = bannerDomain;
     webViewBanner->zoneId = bannerZoneId;
@@ -110,18 +110,17 @@ NSNumber* interstitialAdChangeInterval;
     NSLog(@"showBanner.loadAd");
     [webViewBanner loadAd:parentView ];
     
-    self.webView.frame = CGRectMake(0,
-                                    0,
-                                    parentView.frame.size.width,
-                                    parentView.frame.size.height - 60);
-    self.parentView.layoutSubviews;
-
+    int w = parentView.frame.size.width;
+    int h = parentView.frame.size.height - 60;
+    [self.webView setFrame:CGRectMake(0,0,w,h)];
+    [self.parentView layoutSubviews];
+    
     
     if(webViewBanner.bannerView.hidden == true) {
         NSLog(@"showBanner.Restore Hidden");
         webViewBanner.bannerView.hidden = false;
     }
-
+    
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
@@ -131,10 +130,10 @@ NSNumber* interstitialAdChangeInterval;
     CDVPluginResult *pluginResult;
     NSString *callbackId = command.callbackId;
     
-    if(self.webViewBanner != NULL) {
+    if(self.webViewBanner != nil) {
         webViewBanner.bannerView.hidden = true;
     }
-   
+    
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
@@ -147,7 +146,7 @@ NSNumber* interstitialAdChangeInterval;
     NSString *callbackId = command.callbackId;
     NSArray* args = command.arguments;
     
-	NSUInteger argc = [args count];
+    NSUInteger argc = [args count];
     if( argc >= 1 ) {
         NSDictionary* options = [command.arguments objectAtIndex:0 withDefault:[NSNull null]];
         
@@ -156,7 +155,7 @@ NSNumber* interstitialAdChangeInterval;
         interstitialZoneId = [options objectForKey:JSON_KEY_ZONE_ID];
         interstitialAdChangeInterval = [options objectForKey:JSON_KEY_CHANGE_INTERVAL];
     }
-    if(self.webViewInterstitial == NULL ) {
+    if(self.webViewInterstitial == nil ) {
         self.webViewInterstitial = [InterstitialView alloc];// initWithAdSize:adSize];
         
         [self.parentView addSubview:webViewInterstitial.interstitialView];
@@ -187,7 +186,7 @@ NSNumber* interstitialAdChangeInterval;
     CDVPluginResult *pluginResult;
     NSString *callbackId = command.callbackId;
     
-    if(self.webViewInterstitial != NULL) {
+    if(self.webViewInterstitial != nil) {
         webViewInterstitial.interstitialView.hidden = true;
     }
     

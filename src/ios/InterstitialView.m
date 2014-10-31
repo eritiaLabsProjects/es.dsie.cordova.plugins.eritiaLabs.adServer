@@ -17,7 +17,7 @@
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.height]);
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.width]);
     
-        interstitialView = [[UIWebView alloc] initWithFrame:CGRectMake(0,
+    interstitialView = [[UIWebView alloc] initWithFrame:CGRectMake(0,
                                                                    0,
                                                                    parentView.frame.size.width,
                                                                    parentView.frame.size.height)];
@@ -38,6 +38,8 @@
                      "); \n",auxUrl];
     
     [interstitialView stringByEvaluatingJavaScriptFromString:url];
+    NSURLRequest* request = [NSURLRequest requestWithURL:@"file://"];
+    [interstitialView loadRequest:request];
     
     return interstitialView;
 }
