@@ -6,8 +6,9 @@
     @public NSNumber* changeInterval;
 }
 
-- (UIWebView*) loadAd:(UIView*) parentView:(UIWebView*) gannerView;
+- (UIWebView*) loadAd:(UIView*) parentView:(UIWebView*) mBannerView;
 
 @property (nonatomic, retain) IBOutlet UIWebView* interstitialView;
+@property (nonatomic, retain) IBOutlet UIWebView* bannerView;
 
 @end

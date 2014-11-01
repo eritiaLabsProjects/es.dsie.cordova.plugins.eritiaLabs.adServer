@@ -2,13 +2,17 @@
 @implementation InterstitialView
 
 @synthesize interstitialView;
+@synthesize bannerView;
 
 #define _TPL_URL = "%s/www/delivery/al.php?refresh=%d&zoneid=%s&source=%s&target=%s&cb=%d&ct0=%s&adstext=Ads&closebutton=special&layerstyle=simple&align=center&valign=middle&padding=10&buttonsize=14&deferclose=5&noborder=t";
 #define _TARGET = "_system";
 #define _RETURN_URL = "URL";
+#define _URL_SCHEMA = "bacoApp://";
 
-- (UIWebView*) loadAd:(UIView *) parentView:(UIWebView *) bannerView
+- (UIWebView*) loadAd:(UIView *) parentView:(UIWebView *) mBannerView
 {
+    bannerView = mBannerView;
+    
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.height]);
     NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.width]);
     
@@ -40,6 +44,16 @@
                      "); \n",auxUrl];
     
     [interstitialView stringByEvaluatingJavaScriptFromString:url];
+    
+    NSString *closeScript = @"javascript:window.injectPostMessage = function(e) { \n"
+    @"   if(typeof e == 'string') { \n"
+    @"       window.location = 'bacoApp://doPostMessage/' + e; \n"
+    @"   } else { \n"
+    @"       window.location = 'bacoApp://doPostMessage/' + e.message; \n"
+    @"   }\n"
+    @"};\n";
+    
+    [interstitialView stringByEvaluatingJavaScriptFromString:closeScript];
 }
 
 -(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
@@ -47,8 +61,41 @@
         [[UIApplication sharedApplication] openURL:[inRequest URL]];
         return NO;
     }
+    NSURL *url = [inRequest URL];
+    NSString *urlStr = url.absoluteString;
+    NSString *protocolPrefix = @"bacoapp://";
     
+    //process only our custom protocol
+    if ([[urlStr lowercaseString] hasPrefix:protocolPrefix])
+    {
+        NSLog([NSString stringWithFormat:@"URLSchmea: %@",urlStr]);
+        
+        //strip protocol from the URL. We will get input to call a native method
+        urlStr = [urlStr substringFromIndex:protocolPrefix.length];
+        
+        //Decode the url string
+        urlStr = [urlStr stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        
+        NSArray *components = [urlStr componentsSeparatedByString:@"/"];
+        NSString *function = [components objectAtIndex:0];
+        
+        if([function isEqualToString:@"doPostMessage"]) {
+            return [self doPostMessage:components];
+        }
+        
+        return NO;
+    }
     return YES;
+}
+
+-(BOOL) doPostMessage:(NSArray *)arguments{
+    NSString *message = [arguments objectAtIndex:1];
+    if([[message lowercaseString] rangeOfString:@"closed"].location != NSNotFound) {
+        NSLog(@"InterstitialView.doPostMessage.closed");
+        [self.interstitialView setHidden:true];
+        [bannerView setHidden:false];
+        
+    }
 }
 
 @end

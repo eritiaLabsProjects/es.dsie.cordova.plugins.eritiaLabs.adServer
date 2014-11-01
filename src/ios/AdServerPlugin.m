@@ -117,10 +117,10 @@ NSNumber* interstitialAdChangeInterval;
     [self.webView setFrame:CGRectMake(0,0,w,h)];
     [self.parentView layoutSubviews];
     
-    
-    if(webViewBanner.bannerView.hidden == true) {
+    BOOL hidden = [webViewBanner.bannerView isHidden];
+    if(hidden == YES) {
         NSLog(@"showBanner.Restore Hidden");
-        webViewBanner.bannerView.hidden = false;
+        [webViewBanner.bannerView setHidden:NO];
     }
     
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -133,7 +133,7 @@ NSNumber* interstitialAdChangeInterval;
     NSString *callbackId = command.callbackId;
     
     if(self.webViewBanner != nil) {
-        webViewBanner.bannerView.hidden = true;
+        [webViewBanner.bannerView setHidden:YES];
     }
     
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
@@ -173,12 +173,13 @@ NSNumber* interstitialAdChangeInterval;
     [webViewInterstitial loadAd:parentView:webViewBanner.bannerView ];
     if(need2Add == true) {
         [self.parentView addSubview:webViewInterstitial.interstitialView];
-        [self.parentView bringSubviewToFront:webViewInterstitial.interstitialView];
     }
-    if(webViewInterstitial.interstitialView.hidden == true) {
+    BOOL hidden = [webViewInterstitial.interstitialView isHidden];
+    if(hidden == YES) {
         NSLog(@"showInterstitial.Restore Hidden");
-        webViewInterstitial.interstitialView.hidden = false;
+        [webViewInterstitial.interstitialView setHidden:NO];
     }
+    [self.parentView bringSubviewToFront:webViewInterstitial.interstitialView];
     
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
@@ -190,7 +191,7 @@ NSNumber* interstitialAdChangeInterval;
     NSString *callbackId = command.callbackId;
     
     if(self.webViewInterstitial != nil) {
-        webViewInterstitial.interstitialView.hidden = true;
+        [webViewInterstitial.interstitialView setHidden:YES];
     }
     
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
