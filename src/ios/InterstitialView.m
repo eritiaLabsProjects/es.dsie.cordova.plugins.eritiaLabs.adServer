@@ -19,7 +19,7 @@
     int y = 20;
     int h = parentView.frame.size.height - y + bannerView.frame.size.height;
     
-    [bannerView setHidden:TRUE];
+    //[bannerView setHidden:TRUE];
     interstitialView = [[UIWebView alloc] initWithFrame:CGRectMake(0,y,parentView.frame.size.width,h)];
     interstitialView.delegate = self;
     interstitialView.scalesPageToFit = NO;
@@ -66,8 +66,7 @@
     NSString *protocolPrefix = @"bacoapp://";
     
     //process only our custom protocol
-    if ([[urlStr lowercaseString] hasPrefix:protocolPrefix])
-    {
+    if ([[urlStr lowercaseString] hasPrefix:protocolPrefix]) {
         NSLog([NSString stringWithFormat:@"URLSchmea: %@",urlStr]);
         
         //strip protocol from the URL. We will get input to call a native method

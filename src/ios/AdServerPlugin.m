@@ -109,7 +109,6 @@ NSNumber* interstitialAdChangeInterval;
     [webViewBanner loadAd:parentView ];
     if(need2Add == true) {
         [self.parentView addSubview:webViewBanner.bannerView];
-        [self.parentView bringSubviewToFront:webViewBanner.bannerView];
     }
     
     int w = parentView.frame.size.width;
@@ -122,7 +121,8 @@ NSNumber* interstitialAdChangeInterval;
         NSLog(@"showBanner.Restore Hidden");
         [webViewBanner.bannerView setHidden:NO];
     }
-    
+    [self.parentView bringSubviewToFront:webViewBanner.bannerView];
+
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
@@ -158,10 +158,11 @@ NSNumber* interstitialAdChangeInterval;
         interstitialAdChangeInterval = [options objectForKey:JSON_KEY_CHANGE_INTERVAL];
     }
     bool need2Add = false;
-    if(self.webViewInterstitial == nil ) {
+    
+    //if(self.webViewInterstitial == nil ) {
         self.webViewInterstitial = [InterstitialView alloc];// initWithAdSize:adSize];
         need2Add = true;
-    }
+    //}
     
     
     webViewInterstitial->source = interstitialSource;
@@ -192,6 +193,7 @@ NSNumber* interstitialAdChangeInterval;
     
     if(self.webViewInterstitial != nil) {
         [webViewInterstitial.interstitialView setHidden:YES];
+        close(0);
     }
     
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
