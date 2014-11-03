@@ -13,18 +13,13 @@
     
     NSLog(auxUrl);
     
-    
-    NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.height]);
-    NSLog([NSString stringWithFormat:@"%f",parentView.frame.size.width]);
-    
     int y = parentView.frame.size.height - 60;
     int w = parentView.frame.size.width;
     
     bannerView = [[UIWebView alloc] initWithFrame:CGRectMake(0,y,w,60)];
-    //bannerView = [UIWebView alloc];
-    //bannerView.delegate = self;
-    [bannerView setDelegate:self];
+    
     [bannerView setScalesPageToFit:NO];
+    bannerView.delegate = self;
     
     NSURL* url = [NSURL URLWithString:auxUrl];
     NSURLRequest* request = [NSURLRequest requestWithURL:url];
@@ -33,13 +28,17 @@
     return bannerView;
 }
 
-/*-(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
- if ( inType == UIWebViewNavigationTypeLinkClicked ) {
- [[UIApplication sharedApplication] openURL:[inRequest URL]];
- return NO;
+-(void)webViewDidFinishLoad:(UIWebView *)webView {
+    bannerView.delegate = self;    
+}
+
+-(BOOL) webView:(UIWebView *)inWeb shouldStartLoadWithRequest:(NSURLRequest *)inRequest navigationType:(UIWebViewNavigationType)inType {
+    if ( inType == UIWebViewNavigationTypeLinkClicked ) {
+        [[UIApplication sharedApplication] openURL:[inRequest URL]];
+        return NO;
+    }
+
+    return YES;
  }
- 
- return YES;
- }*/
 
 @end
